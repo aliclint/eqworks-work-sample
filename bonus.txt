@@ -1,0 +1,20 @@
+Question 4a Bonus
+
+Hypothesis: POIs are the closest points that handles requests on a single day. Most likely they are on-premise servers.
+
+Assumption:
+1. All requests will route to one of the POIs with duplicate coordinates. (in this implementation all requests were routed to POI1, and POI2 get 0 requests)
+2. These POIs are located in the border of ON and QC.
+3. Closest distance measured by euclidean distance.
+
+Testing steps to validate hypothesis:
+
+1. Did a query to find the distribution of TimeStamps over provinces. Found that there were no distinguishable time lags between all provinces. However, based on the minimum and maximum timestamp it was determined that the requests came from a single day.
+2. Did a query to count the number of countires  provinces that belong to each POIID. Found that they all originated from Canada. Found that 8 belonged to POI1, 2 belonged to POI3 and 6 belongted to POI4.
+3. The next query was made on mapping the POIIDs to the provinces and found that all three shared ON and QC as provinces which requests come from. 
+4. Calculated the standard devation of the coordinates of all requests made on each province and found there were some deviaton within each province so I wanted to inspect further. 
+5. Calculated the standard deviation of the coordinates of all requests made on each City and found that their standard deviations were close to 0. This implies that the geographical information is tied to their longitude and latitude.
+6. Based on POI3 getting both ON and QC requests I make the assumption that it is located close to the border of ON and QC, in either province. Further validated by the cities that make up the requests for POI3.
+7. Finally, when I subtract the common denominators (i.e. ON and QC) on POI1 and POI4, we find that POI1 serves all Western and Central Canada (i.e. BC, AB, YT). Also, POI4 serves the Eastern Provinces of Canada (i.e. PE, NB).
+8. Can conclude that POI1 handles the requests for Western and Central Canada and some western portion of ON and QC. POI3 is in the borders of ON and QC and serves a smaller portion of the country.
+POI4 handles the requests of Eastern Canada including some eastern cities of ON and QC. POI2 should be able to handle the requests like POI1, but not in this current implementation.

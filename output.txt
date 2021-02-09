@@ -1,0 +1,75 @@
+Question 1.
+Count of data sample before removing duplicates: 22025
+Count of data sample after removing duplicates: 19999
+Question 2
+Since we later need to 'draw' a circle, I have chosen to implement the euclidean distance over the haversine distance.
++-------+--------------------+-------+--------+---------------+--------+----------+-----+---------+-----------+------------------+
+|     ID|           TimeStamp|Country|Province|           City|Latitude| Longitude|POIID|  poi_lat|   poi_long|euclidean_distance|
++-------+--------------------+-------+--------+---------------+--------+----------+-----+---------+-----------+------------------+
+|5110438|2017-06-21 12:41:...|     CA|      AB|   Medicine Hat| 50.0816| -110.5788| POI1|53.546167|-113.485734|4.5225534577100275|
+|4794397|2017-06-21 16:18:...|     CA|      AB|        Calgary|50.90992|-114.12899| POI1|53.546167|-113.485734|2.7135910757785515|
+|4886318|2017-06-21 09:26:...|     CA|      AB|        Calgary|50.91459| -114.0219| POI1|53.546167|-113.485734| 2.685641727126872|
+|5605083|2017-06-21 09:21:...|     CA|      AB|Redwood Meadows| 50.9514| -114.3591| POI1|53.546167|-113.485734|  2.73780641285044|
+|5182545|2017-06-21 16:46:...|     CA|      AB|        Calgary|50.95462|-114.11521| POI1|53.546167|-113.485734| 2.666900052080131|
+|5106022|2017-06-21 18:41:...|     CA|      AB|        Calgary| 50.9632|  -114.082| POI1|53.546167|-113.485734|2.6508963891191564|
+|4741980|2017-06-21 10:14:...|     CA|      AB|        Calgary| 51.0242| -114.1004| POI1|53.546167|-113.485734|2.5957911781661065|
+|5467677|2017-06-21 19:10:...|     CA|      AB|        Calgary| 51.0272| -114.0349| POI1|53.546167|-113.485734| 2.578134605222346|
+|5058508|2017-06-21 16:37:...|     CA|      AB|        Calgary| 51.0486|  -113.968| POI1|53.546167|-113.485734| 2.543702304564155|
+|5266261|2017-06-21 14:52:...|     CA|      AB|        Calgary| 51.0524|  -114.038| POI1|53.546167|-113.485734|2.5541870693128557|
+|4694723|2017-06-21 12:11:...|     CA|      AB|        Calgary|  51.053|  -114.161| POI1|53.546167|-113.485734| 2.582995520833323|
+|4661048|2017-06-21 20:08:...|     CA|      AB|        Calgary|  51.053|  -114.161| POI1|53.546167|-113.485734| 2.582995520833323|
+|5224902|2017-06-21 00:49:...|     CA|      AB|        Calgary|  51.063|  -113.889| POI1|53.546167|-113.485734|2.5156990711619254|
+|5496560|2017-06-21 18:12:...|     CA|      AB|        Calgary| 51.0823|  -114.142| POI1|53.546167|-113.485734| 2.549769726160581|
+|4671387|2017-06-21 21:09:...|     CA|      AB|        Calgary| 51.0823| -113.9578| POI1|53.546167|-113.485734|2.5086823039287007|
+|4534509|2017-06-21 03:00:...|     CA|      AB|        Calgary| 51.0876| -114.0214| POI1|53.546167|-113.485734| 2.516245170297398|
+|5544642|2017-06-21 14:17:...|     CA|      AB|        Calgary| 51.0905|  -114.182| POI1|53.546167|-113.485734|2.5524667985392098|
+|5428996|2017-06-21 13:06:...|     CA|      AB|        Calgary| 51.0915| -114.2073| POI1|53.546167|-113.485734|2.5585244914295786|
+|4878886|2017-06-21 19:25:...|     CA|      AB|        Calgary|51.09722|-113.94464| POI1|53.546167|-113.485734| 2.491573022338498|
+|4717553|2017-06-21 01:12:...|     CA|      AB|        Calgary| 51.1229|  -114.189| POI1|53.546167|-113.485734| 2.523253063021024|
++-------+--------------------+-------+--------+---------------+--------+----------+-----+---------+-----------+------------------+
+only showing top 20 rows
+
+Check: There are 19999 entries in this dataframe. Then it means we still don't have duplicates after the cross join.
+Question 3
+The average and standard deviation between the POI to each of its assigned requests is as follows.
+Note that POI1 and POI2 are in the same exact location, and in this run POI2 have no requests assigned to it and have null as values.
+Assumption: Given a POI with duplicate geographical data points, all requests will route to one of the POI with that data points
++-----+-----------------+--------------------+------------------+--------------------+
+|POIID| average_distance|stddev_samp_distance|            radius|             density|
++-----+-----------------+--------------------+------------------+--------------------+
+| POI1|3.348183006325605|   3.858489571570677|24.851937229893878|  1.5909698090373576|
+| POI2|             null|                null|              null|                null|
+| POI3|5.537950830488864|   2.858689729540489|20.155377791591437|  2.4484833757802162|
+| POI4|8.810410862715695|  28.675130269811003| 192.7049913074258|0.001320564715537809|
++-----+-----------------+--------------------+------------------+--------------------+
+
+Question 4a #1
+Providing a mathematical model to map the popularity of POIs in a scale of [-10,10].
+This solution is inspired by the boxplot way of visualizing data where we can see the centrality of the data based on the median which is not sensitive to outliers.
+In essence we have two calculated fields which is the count of cities over province and density for each POI.
+Number of countries was ommited because I the data comes from Canada only (Validated in bonus.txt).
+Then we calculate the percentile rank over each of the rows. The percentile method will take care of the new requests coming in, that can be outliers, since it depends on the data itself and will scale accordingly.
+We sum the percentiles of the calculated field (each calculated field have ranges [0,1]), and we get a data value of range [0,2]. We multiply by 10 and subtract by 10 to get the desired scale of [-10,10].
+Note that POI2 is considered as popularity -10 as expected since no requests are ever routed there in this iteration.
+Equations:
+city_over_province = count(city)/count(province)
+density = requests / area
+Note: In order to scale this process perhaps recalculating the popularity over a period of time daily or 4x a day depending on the density of requests of the time and day.
+popularity = (percent_rank(city_over_province) + percent_rank(density))*10 - 10
++-----+---------------------------+------------------+------------------+
+|POIID|city_over_province_pct_rank|  density_pct_rank|        popularity|
++-----+---------------------------+------------------+------------------+
+| POI2|                        0.0|               0.0|             -10.0|
+| POI4|         0.3333333333333333|0.3333333333333333|-3.333333333333334|
+| POI1|         0.6666666666666666|0.6666666666666666| 3.333333333333332|
+| POI3|                        1.0|               1.0|              10.0|
++-----+---------------------------+------------------+------------------+
+
+Question 4b
+We are using the graphframes package that is better suited to work with graphs.
+Need to find the minimum amount of tasks that are ordered based on the dag's topology.
+We begin by finding the shortest path from task 73 to task 36.
+Then we would do a postorder traversal when printing the tasks. I.e. dependent task then parent task.
+This is our shortest path from the task start to task end: ['73', '20', '97', '36']
+We need to find all the dependent tasks in between each task excluding the task start.
+These are all the tasks needed to be completed starting from from start to end: ['73', '21', '100', '20', '112', '97', '94', '56', '102', '36']
