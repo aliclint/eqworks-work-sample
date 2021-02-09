@@ -8,7 +8,6 @@ output.txt -- txt file containing output of the clinton-ali-main.py
 
 bonus.txt -- Answer to question 4a #2
 
-data -- Folder containing the data required for Question 1 to 4a
-task_ids.txt, relations.txt, question.txt -- txt file required for question 4b
+data -- Folder containing the data required for all questions 1 to 4
 
 
