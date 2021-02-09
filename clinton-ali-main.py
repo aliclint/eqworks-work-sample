@@ -92,7 +92,7 @@ def readRelations(pathToFile):
 
 
 if __name__ == '__main__':
-    SUBMIT_ARGS = "--packages graphframes:graphframes:0.8.1-spark3.0-s_2.12 pyspark-shell"
+    SUBMIT_ARGS = "--packages graphframes:graphframes:0.8.1-spark3.0-s_2.12 pyspark-shell" # Will install graphframes on the Spark instance when running SparkContext.
     os.environ["PYSPARK_SUBMIT_ARGS"] = SUBMIT_ARGS
     
     conf = pyspark.SparkConf("local[4]")
